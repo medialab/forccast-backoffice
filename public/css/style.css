@@ -1,0 +1,11 @@
+body {
+  padding-top: 70px;
+}
+
+.btn{
+  transition: all 0.5s;
+}
+
+.endpoint{
+  margin: 15px 0px;
+}

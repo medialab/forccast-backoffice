@@ -1,0 +1,13 @@
+{
+  "name": "forccast-api",
+  "version": "0.0.1",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "d3-queue": "^3.0.3"
+  }
+}
