@@ -45,7 +45,7 @@ config.api.calendar = {
 config.api.news = {
     url: {
         en: 'your english rss url',
-        fr: 'your franch rss url'
+        fr: 'your french rss url'
       },
     path: '/path/where/to/save/file/',
     name: 'news',
