@@ -75,12 +75,15 @@ router.get('/', function(req, res) {
       }
 
       var clean = sanitizeHtml(elm.description, {
-        allowedTags: [ 'p', 'b', 'i', 'em', 'strong', 'a', 'li', 'ul', 'ol'],
+        allowedTags: [ 'p', 'b', 'i', 'em', 'strong', 'a', 'li', 'ul', 'ol','img', 'iframe'],
         allowedAttributes: {
-          'a': [ 'href' ]
+          'a': [ 'href' ],
+          'img': [ 'src', 'class', 'alt' ],
+          'iframe': ['*']
         },
-        exclusiveFilter: function(frame) {
-          return !frame.text.trim();
+        transformTags: {
+          'iframe': sanitizeHtml.simpleTransform('iframe', {width: '100%',height: 'auto', frameborder: '0', class:'news-media'}),
+          'img': sanitizeHtml.simpleTransform('img', {class:'news-media'})
         },
         textFilter: function(text) {
           return text.replace(/\n/g, '');
@@ -103,6 +106,14 @@ router.get('/', function(req, res) {
 
       elm.description = clean;
       elm.media = media;
+
+      var re = /<img[^>]+src="?([^"\s]+)"?[^>]*\/>/;
+      var img = re.exec(media);
+      elm.cover = '';
+      if(img){
+        elm.cover = img[1];
+      }
+
       results.set(elm.guid, elm);
     }
   });
