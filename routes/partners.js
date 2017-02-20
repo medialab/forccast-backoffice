@@ -30,7 +30,7 @@ router.get('/', function(req, res) {
           'description_en'
         ],
         'fr': [
-          'rodescription_fr'
+          'description_fr'
         ]
       }
 
