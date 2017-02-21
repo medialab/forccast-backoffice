@@ -42,7 +42,7 @@ router.get('/', function(req, res) {
 
         var elm = {};
         for(field in d){
-          elm[field] = d[field]
+          elm[field.trim()] = d[field]
         }
 
         translatedFields.en.forEach(function(f){
@@ -61,7 +61,7 @@ router.get('/', function(req, res) {
 
         var elm = {};
         for(field in d){
-          elm[field] = d[field]
+          elm[field.trim()] = d[field]
         }
 
         translatedFields.fr.forEach(function(f){
