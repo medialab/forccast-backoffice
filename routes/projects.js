@@ -3,6 +3,7 @@ var request = require('request');
 var config = require('../config/config.js');
 var fs = require('fs');
 var d3 = require('d3-dsv');
+var d3collection = require('d3-collection');
 var async = require('async');
 var router = express.Router();
 
@@ -24,6 +25,45 @@ router.get('/', function(req, res) {
     if (!error && response.statusCode == 200) {
 
       var json = d3.tsvParse(body);
+
+      /* start calculating meta */
+      var meta = {
+        'typology': d3collection.map(),
+        'institutions': d3collection.map(),
+        'tags': d3collection.map()
+      }
+
+      json.forEach(function(d){
+        if(d['typology']){
+          meta.typology.set(d['typology'].toLowerCase(), {label:d['typology'], value: d['typology'].toLowerCase()})
+        }
+
+        if(d['university_1']){
+          meta.institutions.set(d['university_1'].toLowerCase(), {label: d['university_1'], value: d['university_1'].toLowerCase()})
+        }
+
+        if(d['university_2']){
+          meta.institutions.set(d['university_2'].toLowerCase(), {label: d['university_2'], value: d['university_2'].toLowerCase()})
+        }
+
+        if(d['university_3']){
+          meta.institutions.set(d['university_3'].toLowerCase(), {label: d['university_3'], value: d['university_3'].toLowerCase()})
+        }
+
+        if(d['theme_tags']){
+
+          var tags = d['theme_tags'].split('|');
+
+          tags.forEach(function(tag){
+            meta.tags.set(tag.toLowerCase().trim(), {label : tag.trim() , value: tag.toLowerCase().trim()})
+          })
+
+        }
+
+
+      })
+
+      /* end calculating meta */
 
       var translatedFields = {
         'en' : [
@@ -74,9 +114,25 @@ router.get('/', function(req, res) {
         return elm
       })
 
+      meta.typology = meta.typology.values();
+      meta.institutions = meta.institutions.values();
+      meta.tags = meta.tags.values();
+
       var files = [
-        {lang:'fr', content: json_fr},
-        {lang:'en', content: json_en}
+        {
+          lang:'fr',
+          content: {
+            meta: meta,
+            projects: json_fr
+          }
+        },
+        {
+          lang:'en',
+          content: {
+            meta : meta,
+            projects : json_en
+          }
+        }
       ]
 
       async.each(files, function (file, callback) {
