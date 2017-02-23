@@ -105,7 +105,11 @@ router.get('/', function(req, res) {
       });
 
       elm.description = clean;
-      elm.media = media;
+      elm.media = media.replace(/(<.*?)(-[0-9]+x[0-9]+\.)(png|jpg|jpeg|gif|bmp)(.*?\/>)/ig, replacer);
+
+      function replacer(match, p1, p2,p3,p4, offset, string) {
+          return p1 + '.' + p3 + p4
+        }
 
       var re = /<img[^>]+src="?([^"\s]+)"?[^>]*\/>/;
       var img = re.exec(media);
