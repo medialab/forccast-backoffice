@@ -82,7 +82,7 @@ router.get('/', function(req, res) {
           'iframe': ['*']
         },
         transformTags: {
-          'iframe': sanitizeHtml.simpleTransform('iframe', {width: '100%',height: 'auto', frameborder: '0', class:'news-media'}),
+          'iframe': sanitizeHtml.simpleTransform('iframe', {frameborder: '0', class:'news-mobile embed-responsive-item'}),
           'img': sanitizeHtml.simpleTransform('img', {class:'news-media'})
         },
         textFilter: function(text) {
@@ -97,7 +97,7 @@ router.get('/', function(req, res) {
           'iframe': ['*']
         },
         transformTags: {
-          'iframe': sanitizeHtml.simpleTransform('iframe', {width: '100%',height: 'auto', frameborder: '0'})
+          'iframe': sanitizeHtml.simpleTransform('iframe', {frameborder: '0', class:'news-desk embed-responsive-item'})
         },
         textFilter: function(text) {
           return ''
