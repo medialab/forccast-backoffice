@@ -67,7 +67,11 @@ router.get('/', function(req, res) {
       async.each(files, function (file, callback) {
 
           fs.writeFile(config.api.calendar.path + 'calendar_' + file.lang +'.json', JSON.stringify(file.content, null, 4), function (err) {
-              callback();
+              if(err){
+                callback(err);
+              }else{
+                callback();
+              }
           });
 
       }, function (err) {
@@ -81,7 +85,7 @@ router.get('/', function(req, res) {
       });
 
     }else{
-      var msg = {status:'error', message: error}
+      var msg = {status:'error', message: error?error:body}
       res.send(msg)
     }
   })

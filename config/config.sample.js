@@ -52,5 +52,14 @@ config.api.news = {
     type: 'data'
   };
 
+config.api.texts = {
+    repo: 'github repo name',
+    owner: 'github repo owner',
+    folder: 'github texts folder path',
+    path: '/path/where/to/save/file/',
+    name: 'texts',
+    type: 'data'
+  };
+
 
 module.exports = config;

@@ -1,5 +1,6 @@
 var getEndpoint = function(endpoint, params, callback){
   $.getJSON( '/api/'+ endpoint, params, function( data ) {
+    console.log(data)
     callback(null, data);
   })
 }
@@ -38,6 +39,7 @@ var update = function(endpoint,all,btn) {
         $(btn).toggleClass('btn-default')
         $(btn).toggleClass('btn-danger')
         $(btn).text('Some errors occured!')
+        $(btn).parent().parent().find('.console').text(JSON.stringify(err))
       }else{
         var errors = res.filter(function(d){
           return d.status != 'ok'
@@ -47,10 +49,12 @@ var update = function(endpoint,all,btn) {
           $(btn).toggleClass('btn-default')
           $(btn).toggleClass('btn-danger')
           $(btn).text('Some errors occured!')
+          $(btn).parent().parent().find('.console').text(JSON.stringify(errors))
         }else{
           $(btn).toggleClass('btn-default')
           $(btn).toggleClass('btn-success')
           $(btn).text('All files were saved!')
+          $(btn).parent().parent().find('.console').text('')
         }
 
       }

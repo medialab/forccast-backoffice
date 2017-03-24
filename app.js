@@ -13,6 +13,7 @@ var team = require('./routes/team');
 var partners = require('./routes/partners');
 var calendar = require('./routes/calendar');
 var news = require('./routes/news');
+var texts = require('./routes/texts');
 
 var app = express();
 
@@ -45,6 +46,7 @@ app.use('/api/team', team);
 app.use('/api/partners', partners);
 app.use('/api/calendar', calendar);
 app.use('/api/news', news);
+app.use('/api/texts', texts);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

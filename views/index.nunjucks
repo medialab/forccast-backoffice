@@ -38,6 +38,11 @@
       <div class="col-md-3">
           <button class="btn btn-default btn-block" data-loading-text="fetching data..." onclick="update('{{ dataApi }}',false,this)">update</button>
       </div>
+      <div class="col-md-6">
+          <p class="console">
+
+          </p>
+      </div>
     </div>
     {% endfor %}
     <div class="row">
@@ -48,6 +53,11 @@
       </div>
       <div class="col-md-3">
           <button class="btn btn-default btn-block" data-loading-text="fetching data..." onclick="update('{{ dataApis }}',true,this)">update</button>
+      </div>
+      <div class="col-md-6">
+          <p class="console">
+
+          </p>
       </div>
     </div>
     <div class="row">
