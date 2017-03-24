@@ -1,16 +1,16 @@
 # forccast-backoffice
 
-##Installation
+## Installation
 If you want to run your instance of forccast-backoffice locally on your machine, be sure you have the following requirements installed.
 
-###Requirements
+### Requirements
 
 - [git](http://git-scm.com/book/en/Getting-Started-Installing-Git)
 - [Bower](http://bower.io/#installing-bower)
 - [Node](https://nodejs.org/en/)
 - [gulp-cli](http://gulpjs.com/)
 
-###Instructions
+### Instructions
 
 Clone forccast-backoffice from the command line:
 
