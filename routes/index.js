@@ -6,7 +6,6 @@ var router = express.Router();
 /* GET home page. */
 
 var apiValues = d3.values(config.api);
-
 var dataApis = apiValues.filter(function(d){return d.type == 'data'}).map(function(d){return d.name})
 var deployApis = apiValues.filter(function(d){return d.type == 'deploy'}).map(function(d){return d.name})
 
@@ -14,7 +13,9 @@ router.get('/', function(req, res) {
   res.render('index',
     { title: 'Forccast back office',
       dataApis: dataApis,
-      deployApis: deployApis
+      deployApis: deployApis,
+      preview: config.urls.preview,
+      production: config.urls.production
     }
   );
 });

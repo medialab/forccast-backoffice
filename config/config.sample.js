@@ -1,6 +1,10 @@
 var config = {
+  urls: {},
   api: {}
 };
+
+config.urls.preview = 'your preview url';
+config.urls.production = 'your production url';
 
 config.api.projects = {
     id: 'Google spreadsheet id',
@@ -61,5 +65,18 @@ config.api.texts = {
     type: 'data'
   };
 
+config.api.preview = {
+    path: '/path/where/your/script/is/',
+    file: 'script file name',
+    name: 'preview',
+    type: 'deploy'
+  };
+
+config.api.production = {
+    path: '/path/where/your/script/is/',
+    file: 'script file name',
+    name: 'production',
+    type: 'deploy'
+  };
 
 module.exports = config;

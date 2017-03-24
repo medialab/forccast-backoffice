@@ -14,6 +14,8 @@ var partners = require('./routes/partners');
 var calendar = require('./routes/calendar');
 var news = require('./routes/news');
 var texts = require('./routes/texts');
+var preview = require('./routes/preview');
+var production = require('./routes/production');
 
 var app = express();
 
@@ -47,6 +49,8 @@ app.use('/api/partners', partners);
 app.use('/api/calendar', calendar);
 app.use('/api/news', news);
 app.use('/api/texts', texts);
+app.use('/api/preview', preview);
+app.use('/api/production', production);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

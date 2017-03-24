@@ -1,6 +1,5 @@
 var getEndpoint = function(endpoint, params, callback){
   $.getJSON( '/api/'+ endpoint, params, function( data ) {
-    console.log(data)
     callback(null, data);
   })
 }
@@ -53,7 +52,7 @@ var update = function(endpoint,all,btn) {
         }else{
           $(btn).toggleClass('btn-default')
           $(btn).toggleClass('btn-success')
-          $(btn).text('All files were saved!')
+          $(btn).text('Success!')
           $(btn).parent().parent().find('.console').text('')
         }
 
