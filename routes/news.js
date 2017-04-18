@@ -23,6 +23,8 @@ router.get('/', function(req, res) {
     return;
   }
 
+  var images = JSON.parse(fs.readFileSync('./data/images.json', 'utf-8'))
+
   var url = config.api.news.url[lang];
 
   var filePath = config.api.news.path + 'news_' + lang +'.json';
@@ -113,10 +115,8 @@ router.get('/', function(req, res) {
 
       var re = /<img[^>]+src="?([^"\s]+)"?[^>]*\/>/;
       var img = re.exec(media);
-      elm.cover = '';
-      if(img){
-        elm.cover = img[1];
-      }
+      var id = elm.guid.split('?p=')[1];
+      elm.cover = images['post-' + id];
 
       results.set(elm.guid, elm);
     }

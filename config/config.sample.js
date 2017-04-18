@@ -79,4 +79,14 @@ config.api.production = {
     type: 'deploy'
   };
 
+config.api.images = {
+    path: '/path/where/to/save/file/',
+    url: {
+        en: 'your english rss url',
+        fr: 'your french rss url'
+      },
+    name: 'images',
+    type: 'images'
+  };
+
 module.exports = config;

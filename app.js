@@ -16,6 +16,7 @@ var news = require('./routes/news');
 var texts = require('./routes/texts');
 var preview = require('./routes/preview');
 var production = require('./routes/production');
+var images = require('./routes/images');
 
 var app = express();
 
@@ -51,6 +52,7 @@ app.use('/api/news', news);
 app.use('/api/texts', texts);
 app.use('/api/preview', preview);
 app.use('/api/production', production);
+app.use('/api/images', images);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
