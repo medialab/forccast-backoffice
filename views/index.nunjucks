@@ -82,27 +82,5 @@
       </div>
     </div>
     {% endfor %}
-    <div class="row">
-      <div class="col-md-12">
-        <h2>images news api</h2>
-      </div>
-    </div>
-    {% for imageApi in imagesApis %}
-    <div class="row {{ imageApi }}">
-      <div class="col-md-3">
-          <p class="endpoint">
-            {{ imageApi }}
-          </p>
-      </div>
-      <div class="col-md-3">
-          <button class="btn btn-default btn-block" onclick="update('{{ imageApi }}',false,this)">get images</button>
-      </div>
-      <div class="col-md-3">
-        <p class="console">
-
-        </p>
-      </div>
-    </div>
-    {% endfor %}
   </div> <!-- /container -->
 {% endblock %}
