@@ -11,7 +11,7 @@ var deployApis = apiValues.filter(function(d){return d.type == 'deploy'}).map(fu
 
 router.get('/', function(req, res) {
   res.render('index',
-    { title: 'Forccast back office',
+    { title: 'FORCCAST back office',
       dataApis: dataApis,
       deployApis: deployApis,
       preview: config.urls.preview,
