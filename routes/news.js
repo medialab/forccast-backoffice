@@ -3,6 +3,7 @@ var request = require('request');
 var d3 = require('d3-collection');
 var FeedParser = require('feedparser');
 var sanitizeHtml = require('sanitize-html');
+var cheerio = require('cheerio');
 var config = require('../config/config.js');
 var fs = require('fs');
 var router = express.Router();
@@ -77,44 +78,80 @@ router.get('/', function(req, res) {
       }
 
       var clean = sanitizeHtml(elm.description, {
-        allowedTags: [ 'p', 'b', 'i', 'em', 'strong', 'a', 'li', 'ul', 'ol','img', 'iframe'],
+        allowedTags: [ 'p', 'b', 'i', 'em', 'strong', 'a', 'li', 'ul', 'ol','img', 'iframe','div'],
         allowedAttributes: {
           'a': [ 'href' ],
           'img': [ 'src', 'class', 'alt' ],
-          'iframe': ['*']
+          'iframe': ['*'],
+          'div':['class']
         },
         transformTags: {
           'iframe': sanitizeHtml.simpleTransform('iframe', {frameborder: '0', class:'news-mobile embed-responsive-item'}),
-          'img': sanitizeHtml.simpleTransform('img', {class:'news-media'})
+          'img': sanitizeHtml.simpleTransform('img', {class:'news-media'}),
+          'div': sanitizeHtml.simpleTransform('div', {class:'news-media-container'})
         },
         textFilter: function(text) {
           return text.replace(/\n/g, '');
         }
       });
 
-      var media = sanitizeHtml(elm.description, {
-        allowedTags: ['img', 'iframe'],
+      var iframe = sanitizeHtml(elm.description, {
+        allowedTags: ['iframe'],
         allowedAttributes: {
-          'img': [ 'src' ],
           'iframe': ['*']
         },
         transformTags: {
           'iframe': sanitizeHtml.simpleTransform('iframe', {frameborder: '0', class:'news-desk embed-responsive-item'})
         },
         textFilter: function(text) {
-          return ''
+          return '';
         }
       });
 
+      elm.media = '';
+
+       if(iframe){
+         elm.media = elm.media + iframe;
+       }
+
+      var $ = cheerio.load(elm.description)
+
+      $('.wp-caption').each(function(i,e){
+        var fake = $('<div class="fake"></div>')
+        $(this).wrap(fake)
+        var img = sanitizeHtml(fake.html(), {
+          allowedTags: ['img','p'],
+          allowedAttributes: {
+            'img': [ 'src' ]
+          }
+        });
+        if(img){
+          elm.media = elm.media + img;
+        }
+      })
+
+      $('.wp-caption').remove()
+      $('img').each(function(i,e){
+        var fake = $('<div class="fake"></div>')
+        $(this).wrap(fake)
+        var img = sanitizeHtml(fake.html(), {
+          allowedTags: ['img','p'],
+          allowedAttributes: {
+            'img': [ 'src' ]
+          }
+        });
+        if(img){
+          elm.media = elm.media + img;
+        }
+      })
+
       elm.description = clean;
-      elm.media = media.replace(/(<.*?)(-[0-9]+x[0-9]+\.)(png|jpg|jpeg|gif|bmp)(.*?\/>)/ig, replacer);
+      elm.media = elm.media.replace(/(<.*?)(-[0-9]+x[0-9]+\.)(png|jpg|jpeg|gif|bmp)(.*?\/>)/ig, replacer);
 
       function replacer(match, p1, p2,p3,p4, offset, string) {
           return p1 + '.' + p3 + p4
         }
 
-      var re = /<img[^>]+src="?([^"\s]+)"?[^>]*\/>/;
-      var img = re.exec(media);
       var id = elm.guid.split('?p=')[1];
       elm.cover = images['post-' + id];
 
