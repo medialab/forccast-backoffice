@@ -1,5 +1,5 @@
 var getEndpoint = function(endpoint, params, callback){
-  $.getJSON( '/api/'+ endpoint, params, function( data ) {
+  $.getJSON( 'api/'+ endpoint, params, function( data ) {
     callback(null, data);
   })
 }
