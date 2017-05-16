@@ -36,14 +36,14 @@ router.get('/', function(req, res) {
           start: e.start.dateTime,
           end: e.end.dateTime,
           hangoutLink: e.hangoutLink,
-          summary: e.summary.split('|')[0],
-          description: e.description.split('|')[0]
+          summary: e.summary && e.summary.length ? e.summary.split('|')[0] : e.summary,
+          description: e.description && e.description.length ? e.description.split('|')[0] : e.description
         }
 
         json_fr.push(elm_fr);
 
-        var summary_en = e.summary.split('|').length>1?e.summary.split('|')[1]:e.summary.split('|')[0];
-        var description_en = e.description.split('|').length>1?e.description.split('|')[1]:e.description.split('|')[0];
+        var summary_en = e.summary && e.summary.length ? e.summary.split('|').length>1?e.summary.split('|')[1]:e.summary.split('|')[0] : e.summary;
+        var description_en = e.description && e.description.length ?  e.description.split('|').length>1?e.description.split('|')[1]:e.description.split('|')[0] : e.description;
 
         var elm_en = {
           htmlLink: e.htmlLink,
