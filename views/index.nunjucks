@@ -73,7 +73,7 @@
           </p>
       </div>
       <div class="col-md-3">
-          <button class="btn btn-default btn-block" onclick="update('{{ deployApi }}',false,this)">deploy</button>
+          <button class="btn btn-default btn-block" onclick="update('{{ deployApi }}',false,this)">{{'build website locally' if deployApi == 'preview' else 'deploy current version to prod' }}</button>
       </div>
       <div class="col-md-3">
         <p class="console">
