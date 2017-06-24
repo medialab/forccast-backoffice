@@ -68,6 +68,15 @@ router.get('/', function(req, res) {
           var img = $(this).find('img').attr('src')
           output[id] = img?img:'';
         })
+
+        //featured posts
+        $('.slides li').not('.clone').each(function(){
+          var id = $(this).find('article').attr('id');
+          var img = $(this).find('.post-thumbnail').find('img').attr('src');
+          output[id] = img?img:'';
+        })
+
+
         callback({status:'ok', continue: pageNumber+1})
 
       }else if (!error && response.statusCode == 404) {
