@@ -65,6 +65,17 @@
         <h2>deploy apis</h2>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-6">
+        <p>
+          To publish any updates <b>always</b> follow these steps in the exact order:
+        </p>
+        <ol>
+          <li>click on the <b>preview</b> button</li>
+          <li>once is done click on the <b>production</b> button</li>
+        </ol>
+      </div>
+    </div>
     {% for deployApi in deployApis %}
     <div class="row {{ deployApi }}">
       <div class="col-md-3">
