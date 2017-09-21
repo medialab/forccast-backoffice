@@ -4,3 +4,4 @@ public/components
 .sass-cache
 config/config.js
 .DS_Store
+data/
