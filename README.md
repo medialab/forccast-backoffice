@@ -42,6 +42,12 @@ $ cp config/config.sample.js config/config.js
 
 open the file ```config/config.js``` and fill the information requested.
 
+add images directory (if any):
+
+``` sh
+$ mkdir my-images-directory
+```
+
 You can now run forccast-backoffice from local web server.
 
 ``` sh
