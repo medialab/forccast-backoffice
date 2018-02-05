@@ -30,11 +30,14 @@ router.get('/', function(req, res) {
 
       json.forEach(function(e){
 
+        var hasDateTime = e.start.dateTime !== undefined ? true : false;
+
         var elm_fr = {
           htmlLink: e.htmlLink,
           location: e.location,
-          start: e.start.dateTime,
-          end: e.end.dateTime,
+          start: hasDateTime ? e.start.dateTime : e.start.date,
+          end: hasDateTime ? e.end.dateTime : e.end.date,
+          hasDateTime: hasDateTime,
           hangoutLink: e.hangoutLink,
           summary: e.summary && e.summary.length ? e.summary.split('|')[0] : e.summary,
           description: e.description && e.description.length ? e.description.split('|')[0] : e.description
@@ -48,8 +51,9 @@ router.get('/', function(req, res) {
         var elm_en = {
           htmlLink: e.htmlLink,
           location: e.location,
-          start: e.start.dateTime,
-          end: e.end.dateTime,
+          start: hasDateTime ? e.start.dateTime : e.start.date,
+          end: hasDateTime ? e.end.dateTime : e.end.date,
+          hasDateTime: hasDateTime,
           hangoutLink: e.hangoutLink,
           summary: summary_en,
           description: description_en
