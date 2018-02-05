@@ -23,7 +23,7 @@ router.get('/', function(req, res) {
     function (error, response, body) {
     if (!error && response.statusCode == 200) {
 
-      var json = d3.tsvParse(body.replace(/"/g, ""));
+      var json = d3.tsvParse(body.replace(/"/g, "\\\""));
 
       var translatedFields = {
         'en' : [
