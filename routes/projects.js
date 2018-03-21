@@ -30,12 +30,17 @@ router.get('/', function(req, res) {
       var meta = {
         'typology': d3collection.map(),
         'institutions': d3collection.map(),
-        'tags': d3collection.map()
+        'tags': d3collection.map(),
+        'levels': d3collection.map()
       }
 
       json.forEach(function(d){
         if(d['typology']){
           meta.typology.set(d['typology'].toLowerCase(), {label:d['typology'], value: d['typology'].toLowerCase()})
+        }
+
+        if(d['level']){
+          meta.levels.set(d['level'].toLowerCase(), {label:d['level'], value: d['level'].toLowerCase()})
         }
 
         if(d['university_1']){
@@ -116,6 +121,7 @@ router.get('/', function(req, res) {
 
       meta.typology = meta.typology.values();
       meta.institutions = meta.institutions.values();
+      meta.levels = meta.levels.values();
       meta.tags = meta.tags.values();
 
       var files = [
