@@ -32,6 +32,7 @@ router.get('/', function(req, res) {
 
         var hasDateTime = e.start.dateTime !== undefined ? true : false;
 
+        console.log(e.start, e.start.dateTime && new Date(e.start.dateTime));
         var elm_fr = {
           htmlLink: e.htmlLink,
           location: e.location,
