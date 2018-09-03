@@ -32,12 +32,22 @@ router.get('/', function(req, res) {
 
         var hasDateTime = e.start.dateTime !== undefined ? true : false;
 
-        console.log(e.start, e.start.dateTime && new Date(e.start.dateTime));
+        var start = hasDateTime ? e.start.dateTime : e.start.date;
+        var end = hasDateTime ? e.end.dateTime : e.end.date;
+        const HOUR = 3600 * 1000;
+        var DAY = HOUR * 24;
+        if (start && end && new Date(end).getHours() === 1) {
+          var diff = Math.abs(new Date(end).getTime() - new Date(start).getTime());
+          if (diff%DAY === 0) {
+            end = new Date(new Date(end).getTime() - HOUR * 2);
+          }
+        }
+
         var elm_fr = {
           htmlLink: e.htmlLink,
           location: e.location,
-          start: hasDateTime ? e.start.dateTime : e.start.date,
-          end: hasDateTime ? e.end.dateTime : e.end.date,
+          start,
+          end,
           hasDateTime: hasDateTime,
           hangoutLink: e.hangoutLink,
           summary: e.summary && e.summary.length ? e.summary.split('|')[0] : e.summary,
@@ -49,11 +59,13 @@ router.get('/', function(req, res) {
         var summary_en = e.summary && e.summary.length ? e.summary.split('|').length>1?e.summary.split('|')[1]:e.summary.split('|')[0] : e.summary;
         var description_en = e.description && e.description.length ?  e.description.split('|').length>1?e.description.split('|')[1]:e.description.split('|')[0] : e.description;
 
+
+
         var elm_en = {
           htmlLink: e.htmlLink,
           location: e.location,
-          start: hasDateTime ? e.start.dateTime : e.start.date,
-          end: hasDateTime ? e.end.dateTime : e.end.date,
+          start: start,
+          end: end,
           hasDateTime: hasDateTime,
           hangoutLink: e.hangoutLink,
           summary: summary_en,
