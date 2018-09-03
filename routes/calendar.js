@@ -74,7 +74,19 @@ router.get('/', function(req, res) {
 
         json_en.push(elm_en);
 
+      });
+      json_fr = json_fr.sort(function(a, b) {
+        if (a.start > b.start) {
+          return -1;
+        }
+        return 1;
       })
+      json_en = json_en.sort(function(a, b) {
+        if (a.start > b.start) {
+          return -1;
+        }
+        return 1;
+      });
 
       var files = [
         {lang:'fr', content: json_fr},
@@ -101,7 +113,7 @@ router.get('/', function(req, res) {
           }
       });
 
-    }else{
+    } else{
       var msg = {status:'error', message: error?error:body}
       res.send(msg)
     }
