@@ -95,55 +95,41 @@ router.get('/', function(req, res) {
         }
       });
 
-      var iframe = sanitizeHtml(elm.description, {
-        allowedTags: ['iframe'],
-        allowedAttributes: {
-          'iframe': ['*']
-        },
-        transformTags: {
-          'iframe': sanitizeHtml.simpleTransform('iframe', {frameborder: '0', class:'news-desk embed-responsive-item'})
-        },
-        textFilter: function(text) {
-          return '';
-        }
-      });
+      // var iframe = sanitizeHtml(elm.description, {
+      //   allowedTags: ['iframe'],
+      //   allowedAttributes: {
+      //     'iframe': ['*']
+      //   },
+      //   transformTags: {
+      //     'iframe': sanitizeHtml.simpleTransform('iframe', {frameborder: '0', class:'news-desk embed-responsive-item'})
+      //   },
+      //   textFilter: function(text) {
+      //     return '';
+      //   }
+      // });
 
-      elm.media = '';
-
-       if(iframe){
-         elm.media = elm.media + iframe;
-       }
-
+      // parsing medias for the right column
       var $ = cheerio.load(elm.description)
-
-      $('.wp-caption').each(function(i,e){
+      elm.media = '';
+      // .wp-block-image is the new <figure> wrapper for wordpress (since October 2018)
+      // .wp-caption is for old articles
+      // iframe catches all iframes
+      $('.wp-block-image,.wp-caption,iframe').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
         $(this).wrap(fake)
         var img = sanitizeHtml(fake.html(), {
-          allowedTags: ['img','p'],
+          allowedTags: ['img','figcaption', 'p', 'iframe'],
           allowedAttributes: {
-            'img': [ 'src' ]
+            'img': [ 'src' ],
+            'iframe': ['*']
           }
         });
         if(img){
           elm.media = elm.media + img;
         }
       })
+      $('.wp-block-image,.wp-caption,iframe').remove();
 
-      $('.wp-caption').remove()
-      $('img').each(function(i,e){
-        var fake = $('<div class="fake"></div>')
-        $(this).wrap(fake)
-        var img = sanitizeHtml(fake.html(), {
-          allowedTags: ['img','p'],
-          allowedAttributes: {
-            'img': [ 'src' ]
-          }
-        });
-        if(img){
-          elm.media = elm.media + img;
-        }
-      })
 
       elm.description = clean;
       elm.media = elm.media.replace(/(<.*?)(-[0-9]+x[0-9]+\.)(png|jpg|jpeg|gif|bmp)(.*?\/>)/ig, replacer);
@@ -153,6 +139,8 @@ router.get('/', function(req, res) {
         }
 
       var id = elm.guid.split('?p=')[1];
+      // if (elm.title === 'La cartographie des controverses, prix de l’Innovation de l’Éducation nationale')
+      //   console.log('guid', item.guid, 'images', images);
       elm.cover = images['post-' + id];
 
       results.set(elm.guid, elm);
