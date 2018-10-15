@@ -83,7 +83,8 @@ router.get('/', function(req, res) {
           'a': [ 'href' ],
           'img': [ 'src', 'class', 'alt' ],
           'iframe': ['*'],
-          'div':['class']
+          'div':['class'],
+          'p': ['class']
         },
         transformTags: {
           'iframe': sanitizeHtml.simpleTransform('iframe', {frameborder: '0', class:'news-mobile embed-responsive-item'}),
@@ -105,8 +106,6 @@ router.get('/', function(req, res) {
         var fake = $('<div class="fake"></div>')
         $(this).wrap(fake);
 
-
-
         var img = sanitizeHtml(fake.html(), {
           allowedTags: ['img','figcaption', 'p', 'iframe'],
           allowedAttributes: {
@@ -121,7 +120,6 @@ router.get('/', function(req, res) {
         if ($(this).prop('tagName').toLowerCase() === 'iframe') {
           var next = $(this).parent().next();
           if (next && next.hasClass('legend')) {
-            console.log('add', next.html());
             elm.media = elm.media + '<figcaption>' + next.html() + '</figcaption>';
           }
         }
@@ -148,7 +146,7 @@ router.get('/', function(req, res) {
         if(img){
           elm.media = elm.media + img;
         }
-      })
+      });
 
       elm.description = clean;
       elm.media = elm.media.replace(/(<.*?)(-[0-9]+x[0-9]+\.)(png|jpg|jpeg|gif|bmp)(.*?\/>)/ig, replacer);
