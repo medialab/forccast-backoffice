@@ -78,7 +78,7 @@ router.get('/', function(req, res) {
       }
 
       var clean = sanitizeHtml(elm.description, {
-        allowedTags: [ 'p', 'b', 'i', 'em', 'strong', 'a', 'li', 'ul', 'ol','img', 'iframe','div'],
+        allowedTags: [ 'p', 'b', 'i', 'em', 'strong', 'a', 'li', 'ul', 'ol','img', 'iframe','div', 'figcaption'],
         allowedAttributes: {
           'a': [ 'href' ],
           'img': [ 'src', 'class', 'alt' ],
@@ -117,6 +117,7 @@ router.get('/', function(req, res) {
       $('.wp-block-image,.wp-caption,iframe').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
         $(this).wrap(fake)
+
         var img = sanitizeHtml(fake.html(), {
           allowedTags: ['img','figcaption', 'p', 'iframe'],
           allowedAttributes: {
@@ -128,8 +129,6 @@ router.get('/', function(req, res) {
           elm.media = elm.media + img;
         }
       })
-      $('.wp-block-image,.wp-caption,iframe').remove();
-
 
       elm.description = clean;
       elm.media = elm.media.replace(/(<.*?)(-[0-9]+x[0-9]+\.)(png|jpg|jpeg|gif|bmp)(.*?\/>)/ig, replacer);
