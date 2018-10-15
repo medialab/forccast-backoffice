@@ -95,19 +95,6 @@ router.get('/', function(req, res) {
         }
       });
 
-      // var iframe = sanitizeHtml(elm.description, {
-      //   allowedTags: ['iframe'],
-      //   allowedAttributes: {
-      //     'iframe': ['*']
-      //   },
-      //   transformTags: {
-      //     'iframe': sanitizeHtml.simpleTransform('iframe', {frameborder: '0', class:'news-desk embed-responsive-item'})
-      //   },
-      //   textFilter: function(text) {
-      //     return '';
-      //   }
-      // });
-
       // parsing medias for the right column
       var $ = cheerio.load(elm.description)
       elm.media = '';
@@ -117,10 +104,6 @@ router.get('/', function(req, res) {
       $('.wp-block-image,.wp-caption,iframe').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
         $(this).wrap(fake)
-
-        if (elm.title === 'Reconstruire la ville. Nouvelle simulation en formation continue') {
-          console.log(fake.html());
-        }
 
         var img = sanitizeHtml(fake.html(), {
           allowedTags: ['img','figcaption', 'p', 'iframe'],
@@ -135,13 +118,15 @@ router.get('/', function(req, res) {
       })
       // removing to avoid double-selecting images
       $('.wp-block-image,.wp-caption,iframe').remove();
+      // get single images
+      // @todo the following is a dirty fix
+      // that will create a problem if a news
+      // mixes plain images and legended images (plain images)
+      // will always end up in the end of right column.
+      // It would require more investigation to be fixed
       $('img').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
         $(this).wrap(fake)
-
-        if (elm.title === 'Reconstruire la ville. Nouvelle simulation en formation continue') {
-          console.log(fake.html());
-        }
 
         var img = sanitizeHtml(fake.html(), {
           allowedTags: ['img','figcaption', 'p', 'iframe'],
@@ -163,8 +148,6 @@ router.get('/', function(req, res) {
         }
 
       var id = elm.guid.split('?p=')[1];
-      // if (elm.title === 'La cartographie des controverses, prix de l’Innovation de l’Éducation nationale')
-      //   console.log('guid', item.guid, 'images', images);
       elm.cover = images['post-' + id];
 
       results.set(elm.guid, elm);
