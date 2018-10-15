@@ -103,7 +103,9 @@ router.get('/', function(req, res) {
       // iframe catches all iframes
       $('.wp-block-image,.wp-caption,iframe').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
-        $(this).wrap(fake)
+        $(this).wrap(fake);
+
+
 
         var img = sanitizeHtml(fake.html(), {
           allowedTags: ['img','figcaption', 'p', 'iframe'],
@@ -114,6 +116,14 @@ router.get('/', function(req, res) {
         });
         if(img){
           elm.media = elm.media + img;
+        }
+
+        if ($(this).prop('tagName').toLowerCase() === 'iframe') {
+          var next = $(this).parent().next();
+          if (next && next.hasClass('legend')) {
+            console.log('add', next.html());
+            elm.media = elm.media + '<figcaption>' + next.html() + '</figcaption>';
+          }
         }
       })
       // removing to avoid double-selecting images
