@@ -114,9 +114,13 @@ router.get('/', function(req, res) {
       // .wp-block-image is the new <figure> wrapper for wordpress (since October 2018)
       // .wp-caption is for old articles
       // iframe catches all iframes
-      $('.wp-block-image,.wp-caption,iframe').each(function(i, e) {
+      $('.wp-block-image,.wp-caption,iframe, img').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
         $(this).wrap(fake)
+
+        if (elm.title === 'Reconstruire la ville. Nouvelle simulation en formation continue') {
+          console.log(fake.html())
+        }
 
         var img = sanitizeHtml(fake.html(), {
           allowedTags: ['img','figcaption', 'p', 'iframe'],
