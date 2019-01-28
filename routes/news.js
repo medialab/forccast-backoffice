@@ -37,18 +37,17 @@ router.get('/', function(req, res) {
 
   var feedparser = new FeedParser({addmeta:false});
 
-  var req = request(url);
+  var clientReq = request(url);
 
-
-  req.on('error', function (error) {
+  clientReq.on('error', function (error) {
     var msg = {status:'error', message: error}
     res.send(msg)
   });
 
-  req.on('response', function (res) {
+  clientReq.on('response', function (clientResponse) {
     var stream = this; // `this` is `req`, which is a stream
 
-    if (res.statusCode !== 200) {
+    if (clientResponse.statusCode !== 200) {
       var msg = {status:'error', message: 'error'}
       res.send(msg)
     }
