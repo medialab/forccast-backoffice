@@ -31,8 +31,12 @@ router.get('/', function(req, res) {
   var filePath = config.api.news.path + 'news_' + lang +'.json';
   var results = d3.map();
   if (fs.existsSync(filePath)) {
-    var prevResults = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-    results = d3.map(prevResults, function(d) { return d.guid; });
+    try{
+      var prevResults = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+      results = d3.map(prevResults, function(d) { return d.guid; });
+    } catch(error) {
+      console.log('error with news json', error);
+    }
   }
 
   var feedparser = new FeedParser({addmeta:false});
