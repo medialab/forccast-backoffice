@@ -105,7 +105,7 @@ router.get('/', function(req, res) {
       // .wp-block-image is the new <figure> wrapper for wordpress (since October 2018)
       // .wp-caption is for old articles
       // iframe catches all iframes
-      $('.wp-block-image,.wp-caption,iframe').each(function(i, e) {
+      $('.wp-block-image,.wp-caption,.wp-block-embed__wrapper').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
         $(this).wrap(fake);
 
@@ -118,6 +118,13 @@ router.get('/', function(req, res) {
         });
         if(img){
           elm.media = elm.media + img;
+        }
+
+        if ($(this).hasClass('wp-block-embed__wrapper')) {
+          var next = $(this).parent().next();
+          if (next && next.length && next.get(0).name === 'figcaption') {
+            elm.media = elm.media + '<figcaption>' + next.html() + '</figcaption>';
+          }
         }
 
         if ($(this).prop('tagName').toLowerCase() === 'iframe') {
