@@ -103,7 +103,7 @@ router.get('/', function(req, res) {
           'div': sanitizeHtml.simpleTransform('div', {class:'news-media-container'})
         },
         textFilter: function(text) {
-          return text.replace(/\n/g, '');
+          return text.replace(/\n/g, '').replace(/\u00A0/g, ' ');
         }
       });
 
