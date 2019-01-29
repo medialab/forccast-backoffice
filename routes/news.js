@@ -23,8 +23,16 @@ router.get('/', function(req, res) {
     res.send(msg);
     return;
   }
+  var images = [];
 
-  var images = JSON.parse(fs.readFileSync('./data/images.json', 'utf-8'))
+  if (fs.existsSync('./data/images.json')) {
+    try {
+      images = JSON.parse(fs.readFileSync('./data/images.json', 'utf-8'))
+    }
+    catch(error) {
+      console.log(error);
+    }
+  }
 
   var url = config.api.news.url[lang];
 
