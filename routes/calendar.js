@@ -53,6 +53,11 @@ router.get('/', function(req, res) {
             end = end.getFullYear() + '-' + normalizeDigits(end.getMonth() + 1) + '-' + (end.getDate() - 1);
           }
         }
+        // if no time specified, reduce end by one day (google agenda probably sets end at day+1 00:00 ...)
+        if (start && end && !hasDateTime) {
+          end = new Date(end)
+          end = end.getFullYear() + '-' + normalizeDigits(end.getMonth() + 1) + '-' + (end.getDate() - 1);
+        }
 
         var summary_fr = formatContent(e.summary && e.summary.length ? e.summary.split('|')[0] : e.summary);
         var description_fr = formatContent(e.description && e.description.length ? e.description.split('|')[0] : e.description);
@@ -72,7 +77,6 @@ router.get('/', function(req, res) {
 
         var summary_en = formatContent(e.summary && e.summary.length ? e.summary.split('|').length>1?e.summary.split('|')[1]:e.summary.split('|')[0] : e.summary);
         var description_en = formatContent(e.description && e.description.length ?  e.description.split('|').length>1?e.description.split('|')[1]:e.description.split('|')[0] : e.description);
-
 
 
         var elm_en = {
