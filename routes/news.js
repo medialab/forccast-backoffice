@@ -1,11 +1,14 @@
 var express = require('express');
 var request = require('request');
+var async = require('async')
 var d3 = require('d3-collection');
 var FeedParser = require('feedparser');
 var sanitizeHtml = require('sanitize-html');
 var cheerio = require('cheerio');
 var config = require('../config/config.js');
 var fs = require('fs');
+var extractCleanFileName = require('../helpers/extractCleanFileName');
+var ensureDir = require('../helpers/ensureDir');
 var router = express.Router();
 
 
@@ -23,14 +26,22 @@ router.get('/', function(req, res) {
     res.send(msg);
     return;
   }
-  var images = [];
+  var images = {};
+  var imagesToFetch = {};
 
   if (fs.existsSync('./data/images.json')) {
     try {
-      images = JSON.parse(fs.readFileSync('./data/images.json', 'utf-8'))
+      images = JSON.parse(fs.readFileSync('./data/images.json', 'utf-8'));
+      // convert images to local address
+      images = Object.keys(images).reduce(function(result, postId) {
+        var imageUrl = images[postId]
+        var imageFileName = extractCleanFileName(imageUrl);
+        imagesToFetch[imageUrl] = imageFileName;
+        return Object.assign(result, {[postId]: '/media/' + imageFileName})
+      }, {})
     }
     catch(error) {
-      console.log(error);
+      console.log('images json retrieval error: ', error);
     }
   }
 
@@ -43,7 +54,7 @@ router.get('/', function(req, res) {
       var prevResults = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
       results = d3.map(prevResults, function(d) { return d.guid; });
     } catch(error) {
-      console.log('error with news json', error);
+      console.log('error with news json: ', error);
     }
   }
 
@@ -53,7 +64,9 @@ router.get('/', function(req, res) {
 
   clientReq.on('error', function (error) {
     var msg = {status:'error', message: error}
+    console.log('client request error: ', error)
     res.send(msg)
+    return;
   });
 
   clientReq.on('response', function (clientResponse) {
@@ -62,6 +75,7 @@ router.get('/', function(req, res) {
     if (clientResponse.statusCode !== 200) {
       var msg = {status:'error', message: 'error'}
       res.send(msg)
+      return;
     }
     else {
       stream.pipe(feedparser);
@@ -70,7 +84,9 @@ router.get('/', function(req, res) {
 
   feedparser.on('error', function (error) {
     var msg = {status:'error', message: error}
+    console.log('feed parser error: ', error)
     res.send(msg)
+    return;
   });
 
   feedparser.on('readable', function () {
@@ -115,6 +131,14 @@ router.get('/', function(req, res) {
       // iframe catches all iframes
       $('.wp-block-image,.wp-caption,.wp-block-embed__wrapper').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
+        var src = $(this).find('img').attr('src')
+        if (src) {
+          var imageFileName = extractCleanFileName(src);
+          imagesToFetch[src] = imageFileName;
+          $(this).find('img').attr('src', '/../media/' + imageFileName);
+        }
+        
+        
         $(this).wrap(fake);
 
         var img = sanitizeHtml(fake.html(), {
@@ -124,6 +148,7 @@ router.get('/', function(req, res) {
             'iframe': ['*']
           }
         });
+        
         if(img){
           elm.media = elm.media + img;
         }
@@ -152,7 +177,11 @@ router.get('/', function(req, res) {
       // It would require more investigation to be fixed
       $('img').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
-        $(this).wrap(fake)
+        var src = $(this).attr('src')
+        var imageFileName = extractCleanFileName(src);
+        imagesToFetch[src] = imageFileName;
+        
+        $(this).attr('src', '/../media/' + imageFileName).wrap(fake)
 
         var img = sanitizeHtml(fake.html(), {
           allowedTags: ['img','figcaption', 'p', 'iframe'],
@@ -167,11 +196,11 @@ router.get('/', function(req, res) {
       });
 
       elm.description = clean;
-      elm.media = elm.media.replace(/(<.*?)(-[0-9]+x[0-9]+\.)(png|jpg|jpeg|gif|bmp)(.*?\/>)/ig, replacer);
+      // elm.media = elm.media.replace(/(<.*?)(-[0-9]+x[0-9]+\.)(png|jpg|jpeg|gif|bmp)(.*?\/>)/ig, replacer);
 
-      function replacer(match, p1, p2,p3,p4, offset, string) {
-          return p1 + '.' + p3 + p4
-        }
+      // function replacer(match, p1, p2,p3,p4, offset, string) {
+      //     return p1 + '.' + p3 + p4
+      //   }
 
       var id = elm.guid.split('?p=')[1];
       elm.cover = images['post-' + id];
@@ -183,9 +212,39 @@ router.get('/', function(req, res) {
   feedparser.on('end', function(){
     fs.writeFile(filePath, JSON.stringify(results.values()), function(err) {
         if(err) {
+            console.log('feed parser write error: ', err)
             return res.send({status:'error', message:err});
         }
-        res.send({status:'ok', message:'The file was saved!'})
+        /**
+         * Retrieving online images to local dir
+         */
+        // ensuring the images folder exists
+        ensureDir(config.api.news.path + 'images/');
+        // fetch all images and write them to the images folder
+        async.each(Object.keys(imagesToFetch), function(url, callback) {
+          var fileName = imagesToFetch[url]
+          var output = config.api.news.path + 'images/' + fileName;
+          
+          request({url: encodeURI(url), encoding: 'binary'}, function(error, response, body) {
+            if (error) {
+              // making image retrieval errors non blocking
+              console.log('error with image retrieval: ', error)
+              callback()
+            } else {
+              fs.writeFile(output, body, 'binary', function(error) {
+                if (error) {
+                  callback(error)
+                } else callback()
+              })
+            }
+          })
+        }, function(err) {
+          if (err) {
+            res.send({status:'error', message:err});
+          } else if (!res.headersSent) {
+            res.send({status:'ok', message:'The files were saved!'})
+          }
+        })
     });
 
   });

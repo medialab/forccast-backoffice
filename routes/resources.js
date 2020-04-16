@@ -5,12 +5,15 @@ var fs = require('fs');
 var d3 = require('d3-dsv');
 var async = require('async');
 var router = express.Router();
+var extractCleanFileName = require('../helpers/extractCleanFileName');
+var ensureDir = require('../helpers/ensureDir');
 
 
 /* GET resources listing. */
 router.get('/', function(req, res) {
 
   var url = 'https://docs.google.com/spreadsheets/d/' + config.api.resources.id + '/pub';
+  var imagesToFetch = {};
 
   var params = {
     'gid':config.api.resources.gid,
@@ -54,6 +57,13 @@ router.get('/', function(req, res) {
           delete elm[f]
         })
 
+        // re-set image url in the perspective of fetching it
+        if (elm.url_thumbnail) {
+          var imageFileName = extractCleanFileName(elm.url_thumbnail);
+          imagesToFetch[elm.url_thumbnail] = imageFileName;
+          elm.url_thumbnail = '/../media/' + imageFileName;
+        }
+
         return elm
       })
 
@@ -72,6 +82,14 @@ router.get('/', function(req, res) {
           elm[f.replace('_en','')] = elm[f]
           delete elm[f]
         })
+
+        // re-set image url in the perspective of fetching it
+        if (elm.url_thumbnail) {
+          var imageFileName = extractCleanFileName(elm.url_thumbnail);
+          imagesToFetch[elm.url_thumbnail] = imageFileName;
+          elm.url_thumbnail = '/../media/' + imageFileName;
+        }
+        
 
         return elm
       })
@@ -93,12 +111,36 @@ router.get('/', function(req, res) {
           });
 
       }, function (err) {
-
           if (err) {
               res.send({status:'error', message:err});
           }
           else {
-              res.send({status:'ok', message:'The files were saved!'})
+              // ensuring the images folder exists
+              ensureDir(config.api.resources.path + 'images/');
+              // fetch all images and write them to the images folder
+              async.each(Object.keys(imagesToFetch), function(url, callback) {
+                var fileName = imagesToFetch[url]
+                var output = config.api.projects.path + 'images/' + fileName;
+                request({url: encodeURI(url), encoding: 'binary'}, function(error, response, body) {
+                  if (error) {
+                    // making image retrieval errors non blocking
+                    console.error(error)
+                    callback()
+                  } else {
+                    fs.writeFile(output, body, 'binary', function(error) {
+                      if (error) {
+                        callback(error)
+                      } else callback()
+                    })
+                  }
+                })
+              }, function(err) {
+                if (err) {
+                  res.send({status:'error', message:err});
+                } else {
+                  res.send({status:'ok', message:'The files were saved!'})
+                }
+              })
           }
       });
 

@@ -5,6 +5,8 @@ var fs = require('fs');
 var d3 = require('d3-dsv');
 var d3collection = require('d3-collection');
 var async = require('async');
+var extractCleanFileName = require('../helpers/extractCleanFileName');
+var ensureDir = require('../helpers/ensureDir');
 var router = express.Router();
 
 
@@ -12,6 +14,7 @@ var router = express.Router();
 router.get('/', function(req, res) {
 
   var url = 'https://docs.google.com/spreadsheets/d/' + config.api.projects.id + '/pub';
+  var imagesToFetch = {}
 
   var params = {
     'gid':config.api.projects.gid,
@@ -64,8 +67,10 @@ router.get('/', function(req, res) {
           })
 
         }
-
-
+        // re-set image url in the perspective of fetching it
+        var imageFileName = extractCleanFileName(d.project_image_url);
+        imagesToFetch[d.project_image_url] = imageFileName;
+        d.project_image_url = '/../media/' + imageFileName;
       })
 
       /* end calculating meta */
@@ -147,7 +152,7 @@ router.get('/', function(req, res) {
             if(err){
               callback(err);
             }else{
-              callback();
+              callback()
             }
           });
 
@@ -157,11 +162,36 @@ router.get('/', function(req, res) {
               res.send({status:'error', message:err});
           }
           else {
-              res.send({status:'ok', message:'The files were saved!'})
+            // ensuring the images folder exists
+            ensureDir(config.api.projects.path + 'images/');
+            // fetch all images and write them to the images folder
+            async.each(Object.keys(imagesToFetch), function(url, callback) {
+              var fileName = imagesToFetch[url]
+              var output = config.api.projects.path + 'images/' + fileName;
+              request({url: encodeURI(url), encoding: 'binary'}, function(error, response, body) {
+                if (error) {
+                  // making image retrieval errors non blocking
+                  console.error(error)
+                  callback()
+                } else {
+                  fs.writeFile(output, body, 'binary', function(error) {
+                    if (error) {
+                      callback(error)
+                    } else callback()
+                  })
+                }
+              })
+            }, function(err) {
+              if (err) {
+                res.send({status:'error', message:err});
+              } else {
+                res.send({status:'ok', message:'The files were saved!'})
+              }
+            })
           }
       });
 
-    }else{
+    } else{
       var msg = {status:'error', message: error?error:body}
       res.send(msg)
     }

@@ -69,7 +69,7 @@ router.get('/', function(req, res) {
           output[id] = img?img:'';
         })
 
-        //featured posts
+        //retrieve featured posts
         $('.slides li').not('.clone').each(function(){
           var id = $(this).find('article').attr('id');
           var img = $(this).find('.post-thumbnail').find('img').attr('src');
