@@ -113,7 +113,7 @@ router.get('/', function(req, res) {
       // .wp-block-image is the new <figure> wrapper for wordpress (since October 2018)
       // .wp-caption is for old articles
       // iframe catches all iframes
-      $('.wp-block-image,.wp-caption,.wp-block-embed__wrapper').each(function(i, e) {
+      $('.wp-block-image,.wp-caption,.wp-block-embed__wrapper, p[style="text-align: center"] > iframe, p[style="text-align: center"] img').each(function(i, e) {
         var fake = $('<div class="fake"></div>')
         $(this).wrap(fake);
 
