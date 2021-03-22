@@ -108,6 +108,7 @@ router.get('/', function(req, res) {
       });
 
       // parsing medias for the right column
+      var srcHash = {};
       var $ = cheerio.load(elm.description)
       elm.media = '';
       // .wp-block-image is the new <figure> wrapper for wordpress (since October 2018)
@@ -141,7 +142,12 @@ router.get('/', function(req, res) {
             elm.media = elm.media + '<figcaption>' + next.html() + '</figcaption>';
           }
         }
+        var realImage = $(this).prop('tagName') === 'IMG' ? $(this) : $(this).find('img');
+        if (realImage) {
+          srcHash[realImage.attr('src')] = true;
+        }
       })
+
       // removing to avoid double-selecting images
       $('.wp-block-image,.wp-caption,iframe').remove();
       // get single images
@@ -161,7 +167,7 @@ router.get('/', function(req, res) {
             'iframe': ['*']
           }
         });
-        if(img){
+        if(img && !srcHash[$(this).attr('src')]){
           elm.media = elm.media + img;
         }
       });
