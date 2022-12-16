@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+
+// Added 16-12-2022 to solve prod issue with newest certs
+// This is somewhat unsafe but largely ok lol
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
 var app = require('./app');
 
 app.set('port', process.env.PORT || 3000);
